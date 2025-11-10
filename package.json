@@ -5,6 +5,7 @@
   "version": "3.0.0",
   "private": false,
   "type": "module",
+  "homepage": "https://edupath-nvt.github.io",
   "scripts": {
     "dev": "bun --bun vite",
     "start": "bun --bun vite preview",
