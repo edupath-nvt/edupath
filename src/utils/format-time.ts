@@ -4,6 +4,8 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import { t } from 'src/i18n';
+
 // ----------------------------------------------------------------------
 
 /**
@@ -89,4 +91,23 @@ export function fToNow(date: DatePickerFormat): string {
   }
 
   return dayjs(date).toNow(true);
+}
+
+
+export function fTimeAgo(input: Date | string): string {
+  const date = typeof input === 'string' ? new Date(input) : input;
+  const now = new Date();
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000); // giây
+
+  if (diff < 60) return `${diff} ${t("seconds ago")}`;
+  const minutes = Math.floor(diff / 60);
+  if (minutes < 60) return `${minutes} ${t("minutes ago")}`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ${t("hours ago")}`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} ${t("days ago")}`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} ${t("months ago")};`;
+  const years = Math.floor(months / 12);
+  return `${years} ${t("years ago")}`;
 }

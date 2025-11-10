@@ -1,7 +1,7 @@
 import path from 'path';
 import checker from 'vite-plugin-checker';
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react-swc';
+import react from '@vitejs/plugin-react';
 
 // ----------------------------------------------------------------------
 
@@ -9,7 +9,11 @@ const PORT = 3039;
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      babel: {
+        plugins: ['babel-plugin-react-compiler']
+      }
+    }),
     checker({
       typescript: true,
       eslint: {
@@ -21,7 +25,7 @@ export default defineConfig({
         position: 'tl',
         initialIsOpen: false,
       },
-    }),
+    })
   ],
   resolve: {
     alias: [
@@ -32,7 +36,7 @@ export default defineConfig({
     ],
   },
   build: {
-    outDir: '../backend/public',
+    outDir: 'dist',
     emptyOutDir: true,
     manifest: true,
   },
@@ -40,12 +44,12 @@ export default defineConfig({
   server: {
     port: PORT,
     host: true,
-    // proxy: {
-    //   '/api': {
-    //     target: `http://localhost:4566`,
-    //     changeOrigin: true,
-    //   },
-    // },
+    proxy: {
+      '/api': {
+        target: `http://localhost:4566`,
+        changeOrigin: true,
+      },
+    },
   },
   preview: { port: PORT, host: true },
 });

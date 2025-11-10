@@ -8,6 +8,7 @@ import { RouterLink } from 'src/routes/components';
 import { CONFIG } from 'src/config-global';
 
 import Title from 'src/components/title';
+import { Logo } from 'src/components/logo';
 
 // ----------------------------------------------------------------------
 
@@ -15,7 +16,7 @@ export function NotFoundView() {
   return (
     <>
       <Title>Page Not Found - {CONFIG.appName}</Title>
-      {/* <Logo sx={{ position: 'fixed', top: 20, left: 20 }} /> */}
+      <Logo sx={{ position: 'fixed', top: 20, left: 20 }} />
 
       <Container
         sx={{

@@ -34,6 +34,7 @@ export function SearchField({ value, onChange, sx, ...props }: SearchFieldProps)
       {...props}
       fullWidth
       sx={{
+        maxWidth: 300,
         ...sx,
       }}
       value={s}

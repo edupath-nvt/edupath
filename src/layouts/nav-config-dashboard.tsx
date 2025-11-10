@@ -1,3 +1,5 @@
+import { t } from 'src/i18n';
+
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -13,28 +15,23 @@ export type NavItem = {
 
 export const navData = [
   {
-    title: 'Dashboard',
+    title: t('Target'),
     path: '/',
+    icon: icon('ic-target'),
+  },
+  {
+    title: t('Calendar'),
+    path: '/calendar',
+    icon: icon('ic-calendar'),
+  },
+  {
+    title: t('Leaderboard'),
+    path: '/leaderboard',
     icon: icon('ic-analytics'),
   },
   {
-    title: 'User',
-    path: '/user-management',
-    icon: icon('ic-user'),
-  },
-  {
-    title: 'Books',
-    path: '/book-management',
-    icon: icon('ic-book'),
-  },
-  {
-    title: 'Promotion',
-    path: '/promotion-book-management',
-    icon: icon('ic-sale'),
-  },
-  {
-    title: 'File management',
-    path: '/file-management',
-    icon: icon('ic-dir'),
+    title: t('Setting'),
+    path: '/setting',
+    icon: icon('ic-setting'),
   },
 ];

@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useForm, useWatch, Controller } from 'react-hook-form';
 
-import { green } from '@mui/material/colors';
 import * as colors from '@mui/material/colors';
 import {
   Tab,
@@ -20,12 +19,16 @@ import {
 
 import { RouterLink } from 'src/routes/components';
 import { useAuthCheck } from 'src/routes/hooks/use-auth-check';
+import { checkStatusBarStyle } from 'src/routes/components/check-auth';
 
 import { useThemeData } from 'src/hooks/use-theme-data';
 
 import { axios } from 'src/api/axios';
+import { CONFIG } from 'src/config-global';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { primary as primaryColor } from 'src/theme/core/palette';
 
+import Title from 'src/components/title';
 import { toast } from 'src/components/toast';
 import { Iconify, type IconifyName } from 'src/components/iconify';
 
@@ -50,14 +53,13 @@ const tabsTheme: { key: string; label: string; icon: IconifyName }[] = [
 export default function Setting() {
   const { setMode, mode } = useColorScheme();
   const { setPrimary, primary } = useThemeData();
-
   const form = useForm<{ theme: 'light' | 'dark' | 'system'; mainColor: string }>({
     defaultValues: {
       theme: mode,
       mainColor: primary,
     },
   });
-  const [theme, mainColor = green[600]] = useWatch({
+  const [theme, mainColor = primaryColor.main] = useWatch({
     control: form.control,
     name: ['theme', 'mainColor'],
   });
@@ -67,11 +69,13 @@ export default function Setting() {
   useEffect(() => {
     setMode(theme);
     setPrimary(mainColor);
+    checkStatusBarStyle(theme);
   }, [mainColor, setMode, setPrimary, theme]);
 
   const colorData = Object.entries(colors).filter((x) => x[0] !== 'common');
   return (
     <DashboardContent>
+      <Title>Setting account - {CONFIG.appName}</Title>
       <Stack spacing={2} mb={5}>
         <Typography variant="h4" sx={{ flexGrow: 1 }}>
           Setting account
@@ -125,8 +129,10 @@ export default function Setting() {
                 <Stack
                   direction="row"
                   sx={{
+                    flexWrap: 'wrap',
                     '&> *': {
                       flex: `0 0 ${100 / colorData.length}%`,
+                      minWidth: 32,
                     },
                   }}
                 >

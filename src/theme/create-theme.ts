@@ -28,7 +28,7 @@ export const baseTheme: ThemeOptions = {
   },
   components,
   typography,
-  shape: { borderRadius: 8 },
+  shape: themeConfig.shape,
   cssVariables: themeConfig.cssVariables,
 };
 

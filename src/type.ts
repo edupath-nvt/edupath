@@ -1,10 +1,12 @@
+import type dayjs from 'dayjs';
 import type { Theme, SxProps } from '@mui/material';
 
 declare global {
   type Sx = SxProps<Theme>;
-
-  interface Window {
-    i18n: Record<string, string>;
+  type Dayjs = dayjs.Dayjs
+  type DialogProps = {
+    open: boolean
+    setOpen: (open: boolean) => void
   }
 }
 

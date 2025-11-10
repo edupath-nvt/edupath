@@ -12,6 +12,7 @@ import { Logo } from 'src/components/logo';
 
 import { AuthContent } from './content';
 import { MainSection } from '../core/main-section';
+import { useLayoutPadding } from '../mobile-layout';
 import { LayoutSection } from '../core/layout-section';
 import { HeaderSection } from '../core/header-section';
 
@@ -40,6 +41,7 @@ export function AuthLayout({
   slotProps,
   layoutQuery = 'md',
 }: AuthLayoutProps) {
+  const { top } = useLayoutPadding();
   const renderHeader = () => {
     const headerSlotProps: HeaderSectionProps['slotProps'] = { container: { maxWidth: false } };
 
@@ -68,7 +70,10 @@ export function AuthLayout({
         slots={{ ...headerSlots, ...slotProps?.header?.slots }}
         slotProps={merge(headerSlotProps, slotProps?.header?.slotProps ?? {})}
         sx={[
-          { position: { [layoutQuery]: 'fixed' } },
+          {
+            position: { [layoutQuery]: 'fixed' },
+            pt: top,
+          },
           ...(Array.isArray(slotProps?.header?.sx)
             ? (slotProps?.header?.sx ?? [])
             : [slotProps?.header?.sx]),
@@ -85,11 +90,7 @@ export function AuthLayout({
       sx={[
         (theme) => ({
           alignItems: 'center',
-          p: theme.spacing(3, 2, 10, 2),
-          [theme.breakpoints.up(layoutQuery)]: {
-            justifyContent: 'center',
-            p: theme.spacing(10, 0, 10, 0),
-          },
+          p: theme.spacing(10, 2, 10, 2),
         }),
         ...(Array.isArray(slotProps?.main?.sx)
           ? (slotProps?.main?.sx ?? [])

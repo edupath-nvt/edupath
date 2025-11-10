@@ -1,7 +1,9 @@
+import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
+
 import { Iconify } from 'src/components/iconify';
 
 import type { AccountPopoverProps } from './components/account-popover';
-
 // ----------------------------------------------------------------------
 
 export const _account: AccountPopoverProps['data'] = [
@@ -20,4 +22,16 @@ export const _account: AccountPopoverProps['data'] = [
     href: '/user-management/setting-account',
     icon: <Iconify width={22} icon="solar:settings-bold-duotone" />,
   },
+  ...(Capacitor.isNativePlatform()
+    ? [
+        {
+          label: 'Exit app',
+          href: '#',
+          icon: <Iconify width={22} icon="solar:exit-bold" />,
+          onClick: async () => {
+            await App.exitApp();
+          },
+        },
+      ]
+    : []),
 ];

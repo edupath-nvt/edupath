@@ -9,6 +9,7 @@ type ThemeConfig = {
   classesPrefix: string;
   cssVariables: ThemeCssVariables;
   fontFamily: Record<'primary' | 'secondary', string>;
+  shape: {borderRadius: number};
   palette: Record<
     'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error',
     PaletteColorNoChannels
@@ -25,7 +26,7 @@ export const themeConfig: ThemeConfig = {
   /** **************************************
    * Base
    *************************************** */
-  classesPrefix: 'minimal',
+  classesPrefix: 'edupath',
   /** **************************************
    * Typography
    *************************************** */
@@ -99,6 +100,7 @@ export const themeConfig: ThemeConfig = {
     },
     common: { black: '#000000', white: '#FFFFFF' },
   },
+  shape: { borderRadius: 10 },
   /** **************************************
    * Css variables
    *************************************** */

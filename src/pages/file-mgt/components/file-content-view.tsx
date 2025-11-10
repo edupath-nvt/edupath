@@ -308,7 +308,10 @@ export default function FileContentView({
             <Button
               color="inherit"
               sx={{ minWidth: 'unset', borderRadius: 0.9 }}
-              onClick={() => setPath(rootPath)}
+              onClick={() => {
+                setPath(rootPath);
+                setSearch('');
+              }}
             >
               <Iconify icon="solar:home-2-bold" />
             </Button>
@@ -346,10 +349,18 @@ export default function FileContentView({
         data={_dataList.sort((a, b) => (a.isFile === b.isFile ? 0 : a.isFile ? 1 : -1))}
         config={config}
         keyName="path"
-        renderAction={(row) =>
-          row && (
-            <ActionFile request={request} row={row} listFile={_dataList} allFolder={allFolder} />
-          )
+        renderAction={
+          auth
+            ? (row) =>
+                row && (
+                  <ActionFile
+                    request={request}
+                    row={row}
+                    listFile={_dataList}
+                    allFolder={allFolder}
+                  />
+                )
+            : false
         }
       />
       <Dialog fullWidth maxWidth="sm" open={open}>

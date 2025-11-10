@@ -1,4 +1,4 @@
-import type { Theme, Components } from '@mui/material/styles';
+import type { Theme, Components, CSSProperties } from '@mui/material/styles';
 
 import { varAlpha } from 'minimal-shared/utils';
 
@@ -22,18 +22,15 @@ const MuiBackdrop: Components<Theme>['MuiBackdrop'] = {
 const MuiButton: Components<Theme>['MuiButton'] = {
   defaultProps: {
     disableElevation: true,
-    color: 'primary',
+    color: 'inherit',
   },
   styleOverrides: {
-    root: ({ theme, ownerState: { color = 'primary' } }) => ({
-      color: color === 'inherit' ? 'inherit' : theme.vars.palette[color].contrastText,
-    }),
     containedInherit: ({ theme }) => ({
       color: theme.vars.palette.common.white,
-      backgroundColor: theme.vars.palette.grey[900],
+      backgroundColor: theme.vars.palette.grey[800],
       '&:hover': {
         color: theme.vars.palette.common.white,
-        backgroundColor: theme.vars.palette.grey[900],
+        backgroundColor: theme.vars.palette.grey[800],
       },
     }),
     sizeLarge: {
@@ -44,7 +41,7 @@ const MuiButton: Components<Theme>['MuiButton'] = {
       border: `1px solid ${theme.palette.divider}`,
       '&:hover': {
         color: theme.vars.palette.text.primary,
-        border: `1px solid ${theme.vars.palette.grey[900]}`,
+        border: `1px solid ${theme.vars.palette.grey[800]}`,
       },
     }),
   },
@@ -105,28 +102,6 @@ const MuiPaper: Components<Theme>['MuiPaper'] = {
     }),
     outlined: ({ theme }) => ({
       borderColor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
-    }),
-  },
-};
-
-const MuiList: Components<Theme>['MuiList'] = {
-  styleOverrides: {
-    root: ({ theme }) => ({
-      backgroundImage: 'none',
-      padding: theme.spacing(0.5),
-      overflowY: 'auto',
-      scrollbarWidth: 'none', // Firefox
-      '-ms-overflow-style': 'none', // IE/Edge
-      '&::-webkit-scrollbar': {
-        display: 'none', // Chrome, Safari
-      },
-      '&>* + *': {
-        marginTop: theme.spacing(0.5),
-      },
-      '&>*': {
-        borderRadius: theme.spacing(1),
-        overflow: 'hidden',
-      } as CSSProperties,
     }),
   },
 };
@@ -282,9 +257,7 @@ declare module '@mui/material/Tabs' {
   }
 }
 
-import type { CSSProperties } from 'react';
-
-import { toggleButtonGroupClasses } from '@mui/material';
+import { Zoom, toggleButtonGroupClasses } from '@mui/material';
 
 declare module '@mui/material/TextField' {
   interface TextFieldPropsColorOverrides {
@@ -325,8 +298,13 @@ const MuiTextField: Components<Theme>['MuiTextField'] = {
   },
 };
 
+const IconSelect = (p: { style?: CSSProperties; sx?: Sx; className?: string }) => (
+  <Iconify {...p} icon="eva:arrow-ios-downward-fill" />
+);
+
 const MuiAutocomplete: Components<Theme>['MuiAutocomplete'] = {
   defaultProps: {
+    popupIcon: <IconSelect />,
     slotProps: {
       popper: {
         disablePortal: false,
@@ -349,10 +327,10 @@ const MuiTabs: Components<Theme>['MuiTabs'] = {
           '& .MuiTouchRipple-root': {
             display: 'none',
           },
-          '& > .MuiButtonBase-root': {
+          '& button': {
             minHeight: 52,
           },
-          '&> .MuiButtonBase-root.Mui-selected ': {
+          '& button.Mui-selected ': {
             color: theme.vars.palette.text.primary,
           },
         },
@@ -395,6 +373,27 @@ const MuiToggleButtonGroup: Components<Theme>['MuiToggleButtonGroup'] = {
   },
 };
 
+const MuiSelect: Components<Theme>['MuiSelect'] = {
+  defaultProps: {
+    IconComponent: (props: any) => <IconSelect {...props} />,
+  },
+};
+
+const MuiDialog: Components<Theme>['MuiDialog'] = {
+  defaultProps: {
+    slots: {
+      transition: Zoom,
+    },
+  },
+  styleOverrides: {
+    root: ({ theme }) => ({
+      '& .MuiBackdrop-root': {
+        backdropFilter: `blur(6px)`,
+      } as CSSProperties,
+    }),
+  },
+};
+
 // ----------------------------------------------------------------------
 
 export const components = {
@@ -418,5 +417,6 @@ export const components = {
   MuiInputBase,
   MuiToggleButtonGroup,
   MuiTabs,
-  MuiList,
+  MuiSelect,
+  MuiDialog,
 };

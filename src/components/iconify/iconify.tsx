@@ -21,7 +21,7 @@ export type IconifyProps = React.ComponentProps<typeof IconRoot> &
 export function Iconify({ className, icon, width = 20, height, sx, ...other }: IconifyProps) {
   const id = useId();
 
-  if (!allIconNames.includes(icon) && typeof icon === 'string') {
+  if (!allIconNames.includes(icon)) {
     console.warn(
       [
         `Icon "${icon}" is currently loaded online, which may cause flickering effects.`,

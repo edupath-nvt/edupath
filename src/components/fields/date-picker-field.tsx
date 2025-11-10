@@ -24,11 +24,10 @@ export const DatePickerField = forwardRef<HTMLInputElement, DatePickerFieldProps
   ({ error, helperText, size, fullWidth, ...props }, ref) => (
     <DatePicker
       ref={ref}
-      label="End date"
       dayOfWeekFormatter={formatter}
       {...props}
       slots={{
-        openPickerIcon: () => <Iconify icon="solar:calendar-minimalistic-bold" />,
+        openPickerIcon: () => <Iconify icon="solar:calendar-bold" />,
       }}
       slotProps={{
         textField: {

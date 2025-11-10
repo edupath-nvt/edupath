@@ -2,6 +2,12 @@ import 'src/global.css';
 import 'dayjs/locale/vi';
 
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('Asia/Ho_Chi_Minh');
 
 dayjs.locale('vi');
 
@@ -16,14 +22,15 @@ const ThemeProvider = lazy(() => import('src/theme/theme-provider'));
 
 const ConfigDialog = lazy(() => import('./components/dialog-confirm/confirm-dialog'));
 
+import { Capacitor } from '@capacitor/core';
 import { createPaletteChannel } from 'minimal-shared/utils';
 
 import { useTheme } from '@mui/material';
-import { green } from '@mui/material/colors';
+import { cyan } from '@mui/material/colors';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
+import { useLayoutPadding } from './layouts/mobile-layout';
 import { useThemeData, generateColorPalette } from './hooks/use-theme-data';
-
 // ----------------------------------------------------------------------
 
 type AppProps = {
@@ -32,27 +39,22 @@ type AppProps = {
 
 export default function App({ children }: AppProps) {
   useScrollToTop();
-  const { primary = green[600] } = useThemeData();
   const theme = useTheme();
-  const color = createPaletteChannel(generateColorPalette(primary));
+  const { primary = cyan[500] } = useThemeData();
+  const { bottom } = useLayoutPadding();
+
   return (
     <ThemeProvider
       themeOverrides={{
         colorSchemes: {
           dark: {
             palette: {
-              primary: {
-                ...color,
-                contrastText: theme.palette.getContrastText(color.main),
-              },
+              primary: createPaletteChannel(generateColorPalette(primary, theme)),
             },
           },
           light: {
             palette: {
-              primary: {
-                ...color,
-                contrastText: theme.palette.getContrastText(color.main),
-              },
+              primary: createPaletteChannel(generateColorPalette(primary, theme)),
             },
           },
         },
@@ -62,7 +64,12 @@ export default function App({ children }: AppProps) {
         {children}
       </LocalizationProvider>
       <ConfigDialog />
-      <Toaster position="top-right" />
+      <Toaster
+        position={Capacitor.isNativePlatform() ? 'bottom-right' : 'top-right'}
+        style={{
+          bottom: theme.spacing(bottom + 12),
+        }}
+      />
     </ThemeProvider>
   );
 }

@@ -1,1 +1,1 @@
-export { Logo } from './logo-anhtester';
+export { Logo } from './logo';

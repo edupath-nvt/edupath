@@ -14,7 +14,7 @@ export function LabelBorder({
         zIndex: 1,
         position: 'absolute',
         display: 'inline-flex',
-        ml: (t) => `${t.spacing(2.5)} !important`,
+        ml: (t) => `${t.spacing(1.5)} !important`,
         py: 0.25,
         px: 1,
         color: 'text.primary',

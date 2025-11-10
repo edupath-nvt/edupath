@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router';
 
 import App from './app';
@@ -20,5 +21,5 @@ const router = createBrowserRouter([
 ]);
 
 const root = createRoot(document.getElementById('root')!);
-
 root.render(<RouterProvider router={router} />);
+window.addEventListener('load', async () => await LocalNotifications.requestPermissions());

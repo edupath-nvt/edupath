@@ -27,6 +27,7 @@ export type AccountPopoverProps = IconButtonProps & {
     href: string;
     icon?: React.ReactNode;
     info?: React.ReactNode;
+    onClick?: () => void;
   }[];
 };
 
@@ -133,7 +134,13 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
             <MenuItem
               key={option.label}
               selected={option.href === pathname}
-              onClick={() => handleClickItem(option.href)}
+              onClick={() => {
+                if (option.onClick) {
+                  option.onClick();
+                } else {
+                  handleClickItem(option.href);
+                }
+              }}
             >
               {option.icon}
               {option.label}

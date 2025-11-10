@@ -48,6 +48,7 @@ export function DialogConfirm({ onConfirm, message }: DialogConfirm) {
           loading={isConfirm}
           variant="contained"
           onClick={handleConfirm}
+          color="primary"
         >
           Confirm
         </Button>

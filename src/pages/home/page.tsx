@@ -1,7 +1,6 @@
 import type { IconifyName } from 'src/components/iconify';
 
 import api from 'axios';
-import dayjs from 'dayjs';
 import { varAlpha } from 'minimal-shared/utils';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -14,12 +13,10 @@ import {
   Slider,
   Avatar,
   Button,
-  Divider,
-  MenuItem,
-  CardMedia,
   TextField,
   Typography,
-  ButtonBase,
+  CardHeader,
+  Autocomplete,
 } from '@mui/material';
 
 import { RouterLink } from 'src/routes/components';
@@ -29,11 +26,13 @@ import { useRequest } from 'src/hooks/use-request';
 import { formatFilePath } from 'src/utils/format-filepath';
 
 import { axios } from 'src/api/axios';
+import { useAuth } from 'src/store/auth';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { toast } from 'src/components/toast';
 import { Iconify } from 'src/components/iconify';
-import { CarouselDefault } from 'src/components/carousel/default';
+import { SvgColor } from 'src/components/svg-color';
+import { LabelBorder } from 'src/components/label/label-border';
 
 const status = [
   { code: 200, msg: 'OK', color: '#4CAF50' }, // Xanh lá (Thành công)
@@ -108,15 +107,78 @@ const Icon: Record<number, IconifyName> = {
   6: 'solar:clock-circle-outline',
 };
 
+const ViewCard = ({
+  title,
+  total: totalBook,
+  unit,
+  icon,
+  color,
+}: {
+  title: string;
+  total: number;
+  unit: string;
+  icon: string;
+  color: 'success' | 'warning' | 'error' | 'info' | 'primary' | 'secondary';
+}) => (
+  <Card>
+    <CardHeader
+      title={title}
+      subheader={`total: ${totalBook} ${unit}`}
+      sx={{
+        pb: 3,
+        color: `${color}.main`,
+        background: (t) =>
+          `linear-gradient(30deg, ${varAlpha(t.vars.palette[color].mainChannel, 0.3)} 0%, rgba(0, 0, 0, 0) 60%)`,
+      }}
+    />
+    <SvgColor
+      src={`/assets/icons/navbar/${icon}.svg`}
+      sx={{
+        position: 'absolute',
+        top: (t) => t.spacing(1),
+        right: 0,
+        transform: 'translateX(20%)',
+        height: 80,
+        width: 80,
+        color: `${color}.main`,
+      }}
+    />
+  </Card>
+);
+
 export default function Page() {
-  const { data: books } = useRequest(() =>
-    axios.get('/book').then((res) => res.data.list as BookView[])
-  );
+  const { auth } = useAuth();
   const form = useForm<{ time: number; code: number }>();
+
+  const { data: totalUser = 0 } = useRequest(
+    async () =>
+      await axios.get('/user', { params: { limit: 1 } }).then((e) => e.data.pagination.total)
+  );
+
+  const { data: totalBook = 0 } = useRequest(
+    async () =>
+      await axios.get('/book', { params: { limit: 1 } }).then((e) => e.data.pagination.total)
+  );
+
+  const { data: totalPromotion = 0 } = useRequest(
+    async () =>
+      await axios
+        .get('/promotion-book', { params: { limit: 1 } })
+        .then((e) => e.data.pagination.total)
+  );
+
+  const { data: totalCategory = 0 } = useRequest(
+    async () => await axios.get('/category-book').then((e) => e.data.pagination.total)
+  );
 
   const handleAction = (item: { code: number; msg: string; time?: number }) => () => {
     toast.loading(
-      () => api.post('/api/status', { code: item.code, msg: item.msg, time: item.time }),
+      () =>
+        api.post('/api/status', {
+          code: item.code,
+          msg: item.msg,
+          time: item.time,
+        }),
       {
         loading: 'Loading ...',
         success: (t) => t.data.msg,
@@ -127,96 +189,37 @@ export default function Page() {
 
   return (
     <DashboardContent>
-      <Stack spacing={2}>
-        <CarouselDefault options={{ size: 1 }}>
-          {books?.map((book) => (
-            <Box key={book.id} sx={{ flex: '0 0 100%' }}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  sx={{ aspectRatio: '21 / 9', minHeight: 300 }}
-                  src={formatFilePath(book.picture[0] ?? '/$image-404.svg')}
-                />
-                <Stack
-                  sx={{
-                    justifyContent: 'end',
-                    p: 3,
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: 1,
-                    height: 1,
-                    background:
-                      'linear-gradient(to top, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.15) 100%)',
-                  }}
-                >
-                  <Typography variant="body2" sx={{ color: 'white', opacity: 0.48 }}>
-                    {dayjs(book.createdAt).format('DD MMM YYYY')}
-                  </Typography>
-                  <Typography variant="h5" sx={{ color: 'white', mb: 3 }}>
-                    {book.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'white', opacity: 0.48 }}>
-                    {book.description}
-                  </Typography>
-                </Stack>
-              </Card>
-            </Box>
-          ))}
-        </CarouselDefault>
-        <Box
-          display="flex"
+      <Stack spacing={3}>
+        <Card>
+          <Box
+            component="img"
+            alt="Free API for Testing"
+            src="/assets/Free-API-for-Testing.png"
+            srcSet="/assets/thumb.webp 1x, /assets/Free-API-for-Testing.png 2x"
+            sx={{
+              width: 1,
+              border: 'none',
+              aspectRatio: '1200/628',
+              objectFit: 'cover',
+              borderRadius: 2,
+            }}
+          />
+        </Card>
+        <Card
+          component={Stack}
+          p={3}
+          gap={2}
           sx={{
-            gap: 3,
-            flexDirection: { xs: 'column', md: 'row' },
-            '&>*': {
-              flex: 1,
-            },
+            background: (t) =>
+              `linear-gradient(30deg, ${varAlpha(t.vars.palette.info.mainChannel, 0.1)} 0%, rgba(0, 0, 0, 0) 60%, ${varAlpha(t.vars.palette.secondary.mainChannel, 0.1)} 100%)`,
           }}
         >
-          <Card
-            component={Stack}
-            p={3}
-            gap={2}
-            sx={{
-              background: (t) =>
-                `linear-gradient(30deg, ${varAlpha(t.vars.palette.primary.mainChannel, 0.1)} 0%, rgba(0, 0, 0, 0) 60%, ${varAlpha(t.vars.palette.secondary.mainChannel, 0.1)} 100%)`,
-            }}
-          >
-            <Box
-              sx={{
-                bgcolor: (t) => varAlpha(t.vars.palette.primary.mainChannel, 0.2),
-                alignSelf: 'start',
-                p: 2,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 2,
-                color: 'primary.main',
-              }}
-            >
-              <Iconify icon="solar:document-add-bold" />
-            </Box>
-            <Link component="a" href="/swagger">
-              <Typography variant="h6">Swagger API Documentation</Typography>
-            </Link>
-            <Typography variant="body2">
-              Đây là tài liệu hướng dẫn chi tiết sử dụng các API đang có trong hệ thống của chúng
-              tôi. Bạn có thể tìm hiểu về cách gọi, tham số, định dạng trả về và ví dụ minh họa cho
-              mỗi API. Tài liệu này được cập nhật thường xuyên để phản ánh những thay đổi và cải
-              tiến của hệ thống.
-            </Typography>
-          </Card>
-
-          <Card
-            component={Stack}
-            p={3}
-            gap={2}
-            sx={{
-              background: (t) =>
-                `linear-gradient(30deg, ${varAlpha(t.vars.palette.info.mainChannel, 0.1)} 0%, rgba(0, 0, 0, 0) 60%, ${varAlpha(t.vars.palette.secondary.mainChannel, 0.1)} 100%)`,
-            }}
-          >
+          {auth ? (
+            <Avatar
+              sx={{ width: 52, height: 52, borderRadius: 1.75 }}
+              src={formatFilePath(auth?.avatarUrl)}
+            />
+          ) : (
             <Box
               sx={{
                 bgcolor: (t) => varAlpha(t.vars.palette.info.mainChannel, 0.2),
@@ -225,69 +228,67 @@ export default function Page() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: 2,
+                borderRadius: 1.75,
                 color: 'info.main',
               }}
             >
               <Iconify icon="solar:user-plus-bold" />
             </Box>
-            <Link color="info" component={RouterLink} href="/sign-in">
-              <Typography variant="h6">Book management sign in</Typography>
-            </Link>
-            <Typography variant="body2">
-              Đăng nhập vào trang quản lý sách, bao gồm tạo, cập nhật và xóa sách, tài liệu, người
-              dùng, tệp, danh
+          )}
+          <Link
+            color="info"
+            underline={!auth ? 'hover' : 'none'}
+            {...(!auth && {
+              component: RouterLink,
+              href: '/sign-in',
+            })}
+          >
+            <Typography variant="h6">
+              {auth ? `Welcome ${auth.name}` : 'Book management sign in'}
             </Typography>
-          </Card>
-        </Box>
-        <Divider textAlign="left" sx={{ color: 'text.secondary' }}>
-          List status text
-        </Divider>
-        <Grid
-          container
-          spacing={2}
-          columns={{
-            xs: 1,
-            sm: 2,
-            md: 3,
-            lg: 4,
-            xl: 5,
-          }}
-        >
-          {status.map((item, index) => (
-            <Grid size={1} key={index}>
-              <Card id={`status-${item.code}`}>
-                <ButtonBase sx={{ py: 4, width: 1 }} onClick={handleAction(item)}>
-                  <Stack alignItems="center">
-                    <Box
-                      sx={{
-                        height: 36,
-                        width: 36,
-                        bgcolor: item.color,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderRadius: 4,
-                        color: 'white',
-                        boxShadow: 8,
-                        mb: 2,
-                      }}
-                    >
-                      <Iconify
-                        width={0.6}
-                        icon={Icon[parseInt((item.code / 100).toFixed(0), 10)]}
-                      />
-                    </Box>
-                    <Typography variant="h4" sx={{ color: item.color }}>
-                      {item.code}
-                    </Typography>
-                    <Typography variant="body2">{item.msg}</Typography>
-                  </Stack>
-                </ButtonBase>
-              </Card>
-            </Grid>
-          ))}
+          </Link>
+          <Typography variant="body2" color="textSecondary">
+            {auth
+              ? 'Bạn có thể quản lý thêm xóa sửa người dùng, sách và file. Cài đặt cá nhân hóa trang quản lý đổi màu và chế độ dark mode, light mode.'
+              : 'Đăng nhập vào trang quản lý sách, bao gồm tạo, cập nhật và xóa sách, tài liệu, người dùng, tệp.'}
+          </Typography>
+        </Card>
+
+        <Grid container spacing={3} columns={{ xs: 1, sm: 2, md: 4 }}>
+          <Grid size={1}>
+            <ViewCard total={totalUser} title="User mgt" unit="users" icon="ic-user" color="info" />
+          </Grid>
+
+          <Grid size={1}>
+            <ViewCard
+              total={totalBook}
+              title="Book mgt"
+              unit="books"
+              icon="ic-book"
+              color="success"
+            />
+          </Grid>
+
+          <Grid size={1}>
+            <ViewCard
+              total={totalCategory}
+              title="Category mgt"
+              unit="categories"
+              icon="ic-blog"
+              color="error"
+            />
+          </Grid>
+          <Grid size={1}>
+            <ViewCard
+              total={totalPromotion}
+              title="Promotion mgt"
+              unit="promotions"
+              icon="ic-sale"
+              color="warning"
+            />
+          </Grid>
         </Grid>
+
         <Card
           component="form"
           noValidate
@@ -300,7 +301,8 @@ export default function Page() {
             })()
           )}
         >
-          <Stack p={3} px={5} spacing={3}>
+          <LabelBorder>Test message server</LabelBorder>
+          <Stack p={3} spacing={3}>
             <Stack direction="row" alignItems="center" gap={2}>
               <Typography>Timeout</Typography>
               <Controller
@@ -319,34 +321,36 @@ export default function Page() {
                 )}
               />
             </Stack>
-            <TextField
-              select
-              sx={{
-                '& .MuiSelect-select': {
-                  display: 'flex',
-                },
-              }}
+            <Controller
+              control={form.control}
+              name="code"
               defaultValue={200}
-              {...form.register('code')}
-            >
-              {status.map((option) => (
-                <MenuItem key={option.code} value={option.code}>
-                  <Avatar
-                    sx={{ bgcolor: option.color, color: 'white', mr: 1, width: 24, height: 24 }}
-                  >
-                    <Iconify width={16} icon={Icon[parseInt((option.code / 100).toFixed(0), 10)]} />
-                  </Avatar>
-                  {option.msg}
-                </MenuItem>
-              ))}
-            </TextField>
-            <Button
-              type="submit"
-              size="large"
-              color="inherit"
-              variant="contained"
-              sx={{ alignSelf: 'flex-end' }}
-            >
+              render={({ field }) => (
+                <Autocomplete
+                  options={status}
+                  getOptionLabel={(option) => `${option.code} - ${option.msg}`}
+                  value={status.find((s) => s.code === field.value) || null}
+                  onChange={(_, newValue) => field.onChange(newValue?.code ?? '')}
+                  renderOption={(props, option) => (
+                    <li {...props}>
+                      <Avatar
+                        sx={{ bgcolor: option.color, color: 'white', mr: 1, width: 24, height: 24 }}
+                      >
+                        <Iconify
+                          width={16}
+                          icon={Icon[parseInt((option.code / 100).toFixed(0), 10)]}
+                        />
+                      </Avatar>
+                      <strong style={{ marginRight: '0.5rem' }}>{option.code}</strong> {option.msg}
+                    </li>
+                  )}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Status Code" variant="outlined" />
+                  )}
+                />
+              )}
+            />
+            <Button type="submit" size="large" variant="contained" sx={{ alignSelf: 'flex-end' }}>
               Submit
             </Button>
           </Stack>
