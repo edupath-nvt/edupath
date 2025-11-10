@@ -22,7 +22,7 @@ jobs:
         run: bun install
 
       - name: Build project
-        run: bun build # hoặc script build cụ thể em để trong package.json
+        run: bun run build # hoặc script build cụ thể em để trong package.json
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
