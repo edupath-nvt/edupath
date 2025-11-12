@@ -83,10 +83,10 @@ export function DialogAddSchedule() {
       }
 
       dialog.confirm(
-        t('Do you really want to add {0} study schedules every day at {1} for the {2} subject?', {
-          0: lstSchedule.length,
-          1: data.time.format('HH:mm'),
-          2: data.subject,
+        t('Do you really want to add {{length}} study schedules every day at {{time}} for the {{subject}} subject?', {
+          length: lstSchedule.length,
+          time: data.time.format('HH:mm'),
+          subject: data.subject,
         }),
         async () => {
           const keys = await db.schedules.bulkAdd(lstSchedule, {

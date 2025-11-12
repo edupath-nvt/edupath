@@ -8,6 +8,7 @@ import { t } from 'src/i18n';
 import { Iconify } from 'src/components/iconify';
 
 import { ViewDay } from './components/view-day';
+import { ViewWeek } from './components/view-week';
 import { form, DialogAddSchedule, useDialogAddSchedule } from './dialog/dialog-add-schedule';
 
 const objectItem = {
@@ -17,7 +18,7 @@ const objectItem = {
   },
   week: {
     label: t('Week'),
-    Content: ViewDay,
+    Content: ViewWeek,
   },
   month: {
     label: t('Month'),

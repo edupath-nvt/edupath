@@ -63,7 +63,7 @@ export function ViewDay() {
           alignItems="center"
           gap={1}
         >
-          <span>{day.format('dddd, DD MMMM')}</span>
+          <span>{day.format('ddd, DD MMMM')}</span>
           <Button
             size="small"
             variant="outlined"
