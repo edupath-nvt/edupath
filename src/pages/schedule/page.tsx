@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -9,6 +10,7 @@ import { Iconify } from 'src/components/iconify';
 
 import { ViewDay } from './components/view-day';
 import { ViewWeek } from './components/view-week';
+import { ViewMonth } from './components/view-month';
 import { form, DialogAddSchedule, useDialogAddSchedule } from './dialog/dialog-add-schedule';
 
 const objectItem = {
@@ -22,7 +24,7 @@ const objectItem = {
   },
   month: {
     label: t('Month'),
-    Content: ViewDay,
+    Content: ViewMonth,
   },
 } as const;
 
@@ -55,7 +57,12 @@ export default function Page() {
           sx={{ alignSelf: 'flex-end' }}
           startIcon={<Iconify icon="solar:calendar-add-bold" />}
           color="primary"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            const today = dayjs();
+            form.setValue('day', today);
+            form.setValue('time', today.hour(20).minute(0));
+            setOpen(true);
+          }}
         >
           {t('Add schedule')}
         </Button>

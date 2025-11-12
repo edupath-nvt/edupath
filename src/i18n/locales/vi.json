@@ -22,7 +22,7 @@
   "Leaderboard": "Bảng xếp hạng",
   "Month": "Tháng",
   "New score": "Điểm mới",
-  "Schedule": "Lịch học",
+  "Schedule": "Đặt lịch",
   "Schedule already exists": "Lịch học đã tồn tại",
   "Score": "Điểm số",
   "Select score for update": "Chọn điểm để cập nhật",
@@ -45,5 +45,10 @@
   "You can achieve the target": "Bạn có thể đạt được mục tiêu",
   "You can do anything": "Bạn có thể làm bất cứ điều gì",
   "require score": "yêu cầu điểm",
-  "Week today": "Tuần này"
+  "Week today": "Tuần này",
+  "No data": "Không có dữ liệu",
+  "Your personal activity starts at {{time}} ({{hours}} hours)": "Hoạt động cá nhân của bạn bắt đầu lúc {{time}} ({{hours}} giờ)",
+  "Start studying {{subject}} ({{exam}}) at {{time}} ({{hours}} hours)": "Bắt đầu học {{subject}} ({{exam}}) lúc {{time}} ({{hours}} giờ)",
+  "hour(s)": "giờ",
+  "Month today": "Tháng này"
 }

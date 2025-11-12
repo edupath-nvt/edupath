@@ -47,12 +47,12 @@ export function ViewTabSubject({
             select
           >
             {ListExams.map((exam) => (
-              <MenuItem key={exam} value={exam}>
+              <MenuItem key={exam} value={exam} sx={{ '& .MuiChip-root': { width: 1 } }}>
                 <Chip
+                  size="small"
                   icon={<Iconify color="inherit" icon={Exams[exam].icon as any} />}
                   label={exam}
                   sx={{
-                    width: 1,
                     justifyContent: 'flex-start',
                     color: Exams[exam].color,
                     bgcolor: Color(Exams[exam].color).alpha(0.08).toString(),

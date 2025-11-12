@@ -1,10 +1,7 @@
 import dayjs from 'dayjs';
-import Color from 'color';
 import { t } from 'i18next';
 import { useMemo, useState, useEffect } from 'react';
-import { LocalNotifications } from '@capacitor/local-notifications';
 
-import { red } from '@mui/material/colors';
 import {
   Box,
   Table,
@@ -19,6 +16,8 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  Typography,
+  ClickAwayListener,
 } from '@mui/material';
 
 import { db } from 'src/database/dexie';
@@ -28,10 +27,11 @@ import { Iconify } from 'src/components/iconify';
 import { Center } from 'src/components/views/center';
 import { NoData } from 'src/components/grid-view/components/not-data';
 
-import { saveNotification } from '../utils/save-notification';
-import { useDialogAddSchedule } from '../dialog/dialog-add-schedule';
+import { getTodayStudyProgress } from '../utils/get-today-study-progress';
+import { form, useDialogAddSchedule } from '../dialog/dialog-add-schedule';
 
 const days = [1, 2, 3, 4, 5, 6, 0];
+const heightWeekCell = 80;
 
 function ViewDay({ d, start, today }: { d: number; start: dayjs.Dayjs; today: dayjs.Dayjs }) {
   const now = start.add(d === 0 ? 6 : d - 1, 'day');
@@ -63,23 +63,41 @@ function GetScheduleInTime({
   today,
   hour,
   schedules,
-  setSchedules,
 }: {
   d: number;
   start: dayjs.Dayjs;
   today: dayjs.Dayjs;
   hour: number;
   schedules: Schedule[];
-  setSchedules: React.Dispatch<React.SetStateAction<Schedule[]>>;
 }) {
   const now = start.add(d === 0 ? 6 : d - 1, 'day');
+  const [open, setOpen] = useState(false);
+  const { setOpen: setOpenAddSchedule } = useDialogAddSchedule();
+  const handleTooltipClose = () => {
+    setOpen(false);
+  };
+
+  const handleTooltipOpen = () => {
+    setOpen(true);
+  };
   const schedule = schedules.find((s) => {
     const startTime = dayjs(s.timeHandle).hour();
     return dayjs(s.timeHandle).isSame(now, 'day') && startTime >= hour && startTime < hour + 1;
   });
 
   const Subject = schedule?.subject && Subjects[schedule.subject];
-  if (!Subject) return <Box sx={{ height: 60, zIndex: 24 - hour }} />;
+  if (!Subject)
+    return (
+      <Box
+        onClick={() => {
+          if(today.isAfter(now.hour(hour))) return
+          form.setValue('day', now);
+          form.setValue('time', now.hour(hour).minute(0));
+          setOpenAddSchedule(true);
+        }}
+        sx={{ height: heightWeekCell, zIndex: 24 - hour }}
+      />
+    );
   const Exam = schedule?.exam && Exams[schedule.exam];
   const s = schedule!;
 
@@ -87,132 +105,161 @@ function GetScheduleInTime({
     dayjs(s.timeHandle).isBefore(today) &&
     dayjs(s.timeHandle).add(s.studyTime, 'hour').isAfter(today);
 
+  const top = isActive && getTodayStudyProgress(dayjs(s.timeHandle), s.studyTime, today);
+
   return (
-    <Box
-      sx={{
-        height: 60,
-        position: 'relative',
-        zIndex: 24 - hour,
+    <ClickAwayListener
+      onClickAway={(e) => {
+        e.stopPropagation();
+        handleTooltipClose();
       }}
     >
-      {schedule && Subject && (
-        <Box sx={{ weight: 1, height: schedule.studyTime * 60, py: 1, px: 0.5 }}>
-          <Center
+      <span>
+        <Tooltip
+          title={
+            <Table size="small" padding="none">
+              <TableRow>
+                <TableCell sx={{ color: 'text.secondary', pr: 1 }}>{t('Subject')}</TableCell>
+                <TableCell>{Subject.name}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ color: 'text.secondary', pr: 1 }}>{t('Exam')}</TableCell>
+                <TableCell>{s.exam}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ color: 'text.secondary', pr: 1 }}>{t('Time start')}</TableCell>
+                <TableCell>{dayjs(s.timeHandle).format('HH:mm')}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell sx={{ color: 'text.secondary', pr: 1 }}>{t('Study time')}</TableCell>
+                <TableCell>
+                  {s.studyTime} {t('hour(s)')}
+                </TableCell>
+              </TableRow>
+            </Table>
+          }
+          placement="top"
+          arrow
+          onClose={(e) => {
+            e.stopPropagation();
+            handleTooltipClose();
+          }}
+          open={open}
+          disableFocusListener
+          disableHoverListener
+          disableTouchListener
+          slotProps={{
+            popper: {
+              disablePortal: true,
+            },
+          }}
+        >
+          <Box
             sx={{
-              bgcolor: isActive ? 'none' : 'background.neutral',
-              borderRadius: 1,
-              height: 1,
-              flexDirection: 'column',
-              gap: 1,
+              height: heightWeekCell,
+              position: 'relative',
+              zIndex: 24 - hour,
+              cursor: 'pointer',
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleTooltipOpen();
             }}
           >
-            {isActive && (
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                sx={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  height: 1,
-                  width: 1,
-                  borderRadius: 1,
-                }}
-              />
-            )}
-            <Tooltip arrow title={Subject.name} placement="top">
-              <Badge
-                overlap="circular"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                badgeContent={
-                  <Center
-                    sx={{
-                      bgcolor: Exam?.color,
-                      color: (th) => th.palette.getContrastText(Exam?.color || ''),
-                      width: 18,
-                      height: 18,
-                      borderRadius: '50%',
-                      boxShadow: (th) => th.customShadows.z4,
-                    }}
-                  >
-                    <Iconify width={0.7} icon={Exam?.icon as any} />
-                  </Center>
-                }
-              >
-                <Avatar
+            {schedule && Subject && (
+              <Box sx={{ weight: 1, height: schedule.studyTime * heightWeekCell, py: 1, px: 0.5 }}>
+                <Box
                   sx={{
-                    width: 32,
-                    height: 32,
-                    bgcolor: Subject.color,
-                    color: (th) => th.palette.getContrastText(Subject.color),
+                    display: 'flex',
+                    bgcolor: isActive ? 'none' : 'background.neutral',
+                    borderRadius: 1,
+                    height: 1,
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    position: 'relative',
                   }}
                 >
-                  <Iconify width={0.55} icon={Subject.icon as any} />
-                </Avatar>
-              </Badge>
-            </Tooltip>
-            {['new', 'canceled'].includes(s.status) && dayjs(s.timeHandle).isAfter(today) && (
-              <IconButton
-                size="small"
-                onClick={() => {
-                  db.schedules
-                    .update(s.id!, { status: s.status === 'new' ? 'canceled' : 'new' })
-                    .then(async () => {
-                      if (s.status === 'new') {
-                        await LocalNotifications.cancel({
-                          notifications: [{ id: s.id! }],
-                        });
-                      } else {
-                        await saveNotification([s]);
-                      }
-                      setSchedules((sch) =>
-                        sch.map((e) => {
-                          if (e.id === s.id)
-                            return { ...e, status: e.status === 'new' ? 'canceled' : 'new' };
-                          return e;
-                        })
-                      );
-                    });
-                }}
-                sx={{
-                  alignSelf: 'center',
-                  position: 'relative',
-                  bgcolor: 'divider',
-                  ...(s.status === 'canceled' && {
-                    color: red[600],
-                    '&::after': {
-                      content: '""',
-                      height: 1.5,
-                      bgcolor: red[400],
-                      width: 0.6,
-                      position: 'absolute',
-                      rotate: '45deg',
-                      borderRadius: 0.5,
-                    },
-                    bgcolor: Color(red[600]).alpha(0.08).hexa(),
-                    '&:hover': {
-                      bgcolor: Color(red[600]).alpha(0.16).hexa(),
-                    },
-                  }),
-                }}
-              >
-                <Iconify icon="solar:bell-bing-bold-duotone" />
-              </IconButton>
+                  {isActive && (
+                    <>
+                      <Skeleton
+                        variant="rectangular"
+                        animation="wave"
+                        sx={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          height: 1,
+                          width: 1,
+                          borderRadius: 1,
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: Number(top) + '%',
+                          left: 0,
+                          width: 1,
+                          height: '1px',
+                          bgcolor: 'divider',
+                          '&::after': {
+                            content: "''",
+                            position: 'absolute',
+                            top: -5,
+                            left: -4,
+                            width: 8,
+                            height: 12,
+                            bgcolor: 'error.main',
+                            clipPath: 'polygon(100% 50%, 0 0, 0 100%)',
+                          },
+                        }}
+                      />
+                    </>
+                  )}
+                  <Typography display="block" variant="caption" noWrap maxWidth="100%">
+                    {s.subject}
+                  </Typography>
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={
+                      <Center
+                        sx={{
+                          bgcolor: Exam?.color,
+                          color: (th) => th.palette.getContrastText(Exam?.color || ''),
+                          width: 18,
+                          height: 18,
+                          borderRadius: '50%',
+                          boxShadow: (th) => th.customShadows.z4,
+                        }}
+                      >
+                        <Iconify width={0.7} icon={Exam?.icon as any} />
+                      </Center>
+                    }
+                  >
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor: Subject.color,
+                        color: (th) => th.palette.getContrastText(Subject.color),
+                      }}
+                    >
+                      <Iconify width={0.55} icon={Subject.icon as any} />
+                    </Avatar>
+                  </Badge>
+                  {isActive && (
+                    <Typography variant="caption" color="textSecondary">
+                      {top}%
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
             )}
-            {s.status === 'new' && isActive && (
-              <Avatar sx={{ width: 36, height: 36, bgcolor: 'divider', color: 'text.primary' }}>
-                <Iconify
-                  sx={{
-                    animation: 'spin 1.5s linear infinite',
-                  }}
-                  icon="mingcute:loading-fill"
-                />
-              </Avatar>
-            )}
-          </Center>
-        </Box>
-      )}
-    </Box>
+          </Box>
+        </Tooltip>
+      </span>
+    </ClickAwayListener>
   );
 }
 
@@ -237,12 +284,14 @@ export function ViewWeek() {
       const _end = dayjs(s.timeHandle).add(s.studyTime, 'hour');
 
       if (_start.isBefore(min)) min = _start;
-      if (_end.isAfter(max)) max = _end;
+      if (_end.isAfter(max)) {
+        max = _end;
+      }
     }
 
     return {
       minTime: min.hour(),
-      count: max.hour() - min.hour() + 1,
+      count: (max.hour() || 24) - min.hour(),
     };
   }, [schedules]);
 
@@ -331,8 +380,13 @@ export function ViewWeek() {
           )}
           {Array.from({ length: count }).map((_, idx) => (
             <TableRow key={idx}>
-              <TableCell align="center" sx={{ borderRight: 1, borderColor: 'divider' }}>
-                {minTime + idx}h
+              <TableCell
+                align="center"
+                sx={{ borderRight: 1, borderColor: 'divider', verticalAlign: 'top' }}
+              >
+                <Box sx={{ mt: -1 }}>
+                  {minTime + idx > 24 ? minTime + idx - 24 : minTime + idx}h
+                </Box>
               </TableCell>
               {days.map((d) => (
                 <TableCell key={d} align="center">
@@ -342,7 +396,6 @@ export function ViewWeek() {
                     start={start}
                     today={today}
                     schedules={schedules}
-                    setSchedules={setSchedules}
                   />
                 </TableCell>
               ))}

@@ -12,7 +12,7 @@ import { useDialog } from './store';
 
 type DialogConfirm = {
   onConfirm: () => Promise<void>;
-  message: string;
+  message: React.ReactNode;
 };
 
 export function DialogConfirm({ onConfirm, message }: DialogConfirm) {
@@ -32,7 +32,7 @@ export function DialogConfirm({ onConfirm, message }: DialogConfirm) {
     <>
       <DialogTitle>Confirm</DialogTitle>
       <DialogContent>
-        <DialogContentText>{message}</DialogContentText>
+        {typeof message === 'string' ? <DialogContentText>{message}</DialogContentText> : message}
       </DialogContent>
       <DialogActions>
         <Button

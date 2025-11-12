@@ -45,5 +45,10 @@
   "Week Today": "Week Today",
   "You can achieve the target": "You can achieve the target",
   "You can do anything": "You can do anything",
-  "require score": "require score"
+  "require score": "require score",
+  "No data": "No data",
+  "Your personal activity starts at {{time}} ({{hours}} hours)": "Your personal activity starts at {{time}} ({{hours}} hours)",
+  "Start studying {{subject}} ({{exam}}) at {{time}} ({{hours}} hours)": "Start studying {{subject}} ({{exam}}) at {{time}} ({{hours}} hours)",
+  "hour(s)": "hour(s)",
+  "Month today": "Month today"
 }

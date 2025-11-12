@@ -1,8 +1,9 @@
+import { t } from 'i18next';
 import { varAlpha } from 'minimal-shared/utils';
 
 import { Box, Typography } from '@mui/material';
 
-export function NoData({sx}: {sx?: Sx}) {
+export function NoData({ sx }: { sx?: Sx }) {
   return (
     <Box
       sx={{
@@ -12,12 +13,13 @@ export function NoData({sx}: {sx?: Sx}) {
         boxSizing: 'content-box',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: (t) => varAlpha(t.palette.grey['500Channel'], 0.04),
+        bgcolor: (th) => varAlpha(th.palette.grey['500Channel'], 0.04),
         border: 1,
         borderRadius: 1,
-        borderColor: (t) => varAlpha(t.palette.grey['500Channel'], 0.08),
+        borderColor: (th) => varAlpha(th.palette.grey['500Channel'], 0.08),
         borderStyle: 'dashed',
-        ...sx
+        py: 1,
+        ...sx,
       }}
     >
       <Box
@@ -30,7 +32,7 @@ export function NoData({sx}: {sx?: Sx}) {
         src="/assets/ic-content.svg"
       />
       <Typography variant="h6" color="textDisabled">
-        No Data
+        {t('No data')}
       </Typography>
     </Box>
   );

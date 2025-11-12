@@ -24,7 +24,7 @@ export const dialog = {
       })
     );
   },
-  confirm: (confirm: string, onConfirm: () => Promise<void>) => {
+  confirm: (confirm: React.ReactNode, onConfirm: () => Promise<void>) => {
     confirmEvent.dispatchEvent(
       new CustomEvent<ContentConfirm>('show', {
         detail: {

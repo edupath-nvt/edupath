@@ -213,14 +213,19 @@ function ViewSchedule({
             </IconButton>
           )}
           {s.status === 'new' && isActive && (
-            <Avatar sx={{ width: 36, height: 36, bgcolor: 'divider', color: 'text.primary' }}>
-              <Iconify
-                sx={{
-                  animation: 'spin 1.5s linear infinite',
-                }}
-                icon="mingcute:loading-fill"
-              />
-            </Avatar>
+            <>
+              <Typography variant="caption" color="textSecondary">
+                {top}%
+              </Typography>
+              <Avatar sx={{ width: 36, height: 36, bgcolor: 'divider', color: 'text.primary' }}>
+                <Iconify
+                  sx={{
+                    animation: 'spin 1.5s linear infinite',
+                  }}
+                  icon="mingcute:loading-fill"
+                />
+              </Avatar>
+            </>
           )}
         </Row>
       </>
@@ -306,14 +311,19 @@ function ViewSchedule({
             </IconButton>
           )}
           {s.status === 'new' && isActive && (
-            <Avatar sx={{ width: 36, height: 36, bgcolor: 'divider', color: 'text.primary' }}>
-              <Iconify
-                sx={{
-                  animation: 'spin 1.5s linear infinite',
-                }}
-                icon="mingcute:loading-fill"
-              />
-            </Avatar>
+            <>
+              <Typography variant="caption" color="textSecondary">
+                {top}%
+              </Typography>
+              <Avatar sx={{ width: 36, height: 36, bgcolor: 'divider', color: 'text.primary' }}>
+                <Iconify
+                  sx={{
+                    animation: 'spin 1.5s linear infinite',
+                  }}
+                  icon="mingcute:loading-fill"
+                />
+              </Avatar>
+            </>
           )}
         </Row>
       </>

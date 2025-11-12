@@ -20,6 +20,7 @@ export function Footer() {
         justifyContent: 'center',
         bgcolor: (t) => t.vars.palette.background.neutral,
         pb: bottom,
+        zIndex: 1000
       }}
     >
       <Tabs

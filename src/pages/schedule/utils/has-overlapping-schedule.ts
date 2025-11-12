@@ -14,21 +14,24 @@ function isOverlapping(
 function getEndTime(timeHandle: Date, studyTime: number): Date {
     return dayjs(timeHandle).add(studyTime, 'hour').toDate();
 }
-export async function hasOverlappingSchedule(newSchedules: Schedule[]): Promise<boolean> {
-    // Lấy tất cả lịch hiện có trong DB
+export async function hasOverlappingSchedule(newSchedules: Schedule[]): Promise<boolean[]> {
     const existingSchedules = await db.schedules.filter(s =>
         s.status === 'new' &&
         dayjs(s.timeHandle).isSameOrAfter(dayjs(), 'day')
     ).toArray();
 
-    // Duyệt từng lịch mới
+    const results: boolean[] = [];
+
     for (const newSch of newSchedules) {
-        if (newSch.type !== 'subject' || newSch.studyTime == null) continue;
+        if (newSch.type !== 'subject' || newSch.studyTime == null) {
+            results.push(false);
+            continue;
+        }
 
         const newStart = newSch.timeHandle;
         const newEnd = getEndTime(newStart, newSch.studyTime);
 
-        // So sánh với từng lịch cũ
+        let hasOverlap = false;
         for (const oldSch of existingSchedules) {
             if (oldSch.type !== 'subject' || oldSch.studyTime == null) continue;
 
@@ -36,12 +39,15 @@ export async function hasOverlappingSchedule(newSchedules: Schedule[]): Promise<
             const oldEnd = getEndTime(oldStart, oldSch.studyTime);
 
             if (isOverlapping(newStart, newEnd, oldStart, oldEnd)) {
-                return true; // Có trùng!
+                hasOverlap = true;
+                break;
             }
         }
+
+        results.push(hasOverlap);
     }
 
-    return false; // Không trùng
+    return results;
 }
 
 export async function checkScheduleConflict(
