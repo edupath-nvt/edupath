@@ -23,8 +23,8 @@ export function Logo(props: LogoProps) {
       <SvgIcon
         {...props}
         sx={{
-          width: 42,
-          height: 42,
+          width: 52,
+          height: 52,
           ...props.sx,
         }}
         viewBox="0 0 48 48"

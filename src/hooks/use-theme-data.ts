@@ -6,8 +6,11 @@ import { type Theme } from '@mui/material';
 import { primary as primaryColor } from 'src/theme';
 
 export const useThemeData = create<{ primary: string, setPrimary: (primary: string) => void }>(set => ({
-    primary: primaryColor.main,
-    setPrimary: (primary: string) => set({ primary })
+    primary: localStorage.getItem('primary') || primaryColor.main,
+    setPrimary: (primary: string) => {
+        set({ primary });
+        localStorage.setItem('primary', primary);
+    }
 }))
 
 export const generateColorPalette = (mainColor: string, theme: Theme) => {

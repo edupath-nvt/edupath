@@ -2,14 +2,7 @@ import { useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Style, StatusBar } from '@capacitor/status-bar';
 
-import { useColorScheme } from '@mui/material';
-
-import { useThemeData } from 'src/hooks/use-theme-data';
-
-import { useAuth } from 'src/store/auth';
 import { useLayoutPadding } from 'src/layouts/mobile-layout';
-
-import { useRouter } from '../hooks';
 
 export async function checkStatusBarStyle(mode: 'light' | 'dark' | 'system') {
   if (!Capacitor.isNativePlatform()) {
@@ -32,14 +25,9 @@ export async function checkStatusBarStyle(mode: 'light' | 'dark' | 'system') {
 
 export function CheckAuth({
   children,
-  fallback,
 }: React.PropsWithChildren & {
   fallback: React.ReactNode;
 }) {
-  const { setAuth } = useAuth();
-  const router = useRouter();
-  const { setMode } = useColorScheme();
-  const { setPrimary } = useThemeData();
   const { set } = useLayoutPadding();
 
   useEffect(() => {
@@ -50,7 +38,7 @@ export function CheckAuth({
     if (flatform === 'ios') {
       set(6, 3);
     }
-  }, [router, set, setAuth, setMode, setPrimary]);
+  }, [set]);
 
   return children;
 }

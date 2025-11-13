@@ -33,6 +33,10 @@ const routesSection: RouteObject[] = [
         Component: lazy(() => import('src/pages/schedule/page')),
       },
       {
+        path: '/setting',
+        Component: lazy(() => import('src/pages/settings/page')),
+      },
+      {
         path: '*',
         Component: () => 'not found',
       },

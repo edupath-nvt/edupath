@@ -2,8 +2,8 @@ import { Typography } from '@mui/material';
 
 import { t } from 'src/i18n';
 
-export const getColor = (target: number, require: number) => {
-  let color: string = 'transparent';
+export const getColor = (target: number, require: number, defaultColor: string = 'transparent') => {
+  let color: string = defaultColor;
   if (require > 10) {
     color = 'error.main';
   }
@@ -11,7 +11,7 @@ export const getColor = (target: number, require: number) => {
     color = 'warning.main';
   }
 
-  if(require === 0) {
+  if (require === 0) {
     color = 'primary.main';
   }
   return color;
@@ -36,7 +36,7 @@ export function ViewMessage({
     message = t('It is quite hard to reach the target');
     color = 'warning.main';
   }
-  if(require === 0) {
+  if (require === 0) {
     color = 'primary.main';
   }
 
