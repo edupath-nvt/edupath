@@ -23,11 +23,7 @@ export async function checkStatusBarStyle(mode: 'light' | 'dark' | 'system') {
   }
 }
 
-export function CheckAuth({
-  children,
-}: React.PropsWithChildren & {
-  fallback: React.ReactNode;
-}) {
+export function CheckAuth({ children }: React.PropsWithChildren) {
   const { set } = useLayoutPadding();
 
   useEffect(() => {

@@ -21,7 +21,7 @@ import { lazy, useEffect } from 'react';
 
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 
-import { usePathname } from 'src/routes/hooks';
+import { useRouter, usePathname } from 'src/routes/hooks';
 
 const ThemeProvider = lazy(() => import('src/theme/theme-provider'));
 
@@ -47,6 +47,17 @@ export default function App({ children }: AppProps) {
   const theme = useTheme();
   const { primary = cyan[500] } = useThemeData();
   const { bottom } = useLayoutPadding();
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const redirected = localStorage.getItem('redirected');
+    if (redirected) {
+      localStorage.removeItem('redirected');
+      router.replace(redirected);
+      localStorage.removeItem('redirected');
+    }
+  }, [router]);
 
   return (
     <ThemeProvider

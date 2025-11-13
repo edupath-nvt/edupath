@@ -1,24 +1,21 @@
 import type { RouteObject } from 'react-router';
 
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { MobileLayout } from 'src/layouts/mobile-layout';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CheckAuth } from './components/check-auth';
-import { renderFallback } from './components/fallback';
 // ----------------------------------------------------------------------
 
 const routesSection: RouteObject[] = [
   {
     element: (
-      <CheckAuth fallback={renderFallback()}>
+      <CheckAuth>
         <MobileLayout>
           <DashboardContent maxWidth="sm">
-            <Suspense fallback={renderFallback()}>
-              <Outlet />
-            </Suspense>
+            <Outlet />
           </DashboardContent>
         </MobileLayout>
       </CheckAuth>
