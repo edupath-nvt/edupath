@@ -1,0 +1,1 @@
+import{n as e,u as o}from"./index-CP-lz8Dq.js";import{c as a}from"./createStack-BG4iig6W.js";const c=a({createStyledComponent:e("div",{name:"MuiStack",slot:"Root"}),useThemeProps:t=>o({props:t,name:"MuiStack"})});export{c as S};
